@@ -45,6 +45,9 @@ public final class StopwatchTask
         LOGGER.info("task: {}, finish elapsed time: {} (ms)", taskName, System.currentTimeMillis() - startTime);
     }
 
+    // TODO: 19.10.2016 doAction rethrow exception
+    // TODO: 19.10.2016 doAction with generic params
+
     @FunctionalInterface
     interface Task
     {
