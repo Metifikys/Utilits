@@ -3,18 +3,33 @@ package metifikys.utils.io.files;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedWriter;
-import java.io.Closeable;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 /**
+ * Synchronized buffer with output to a file<br>
+ *
+ * Simple use
+ * <pre>
+ * <code>ConcurrentFileWrite out = new ConcurrentFileWrite("fileName");
+ * out.add("some line");
+ * out.close();
+ * </code>
+ * </pre>
+ *
+ * or try with resources
+ * <pre>
+ * <code>try(ConcurrentFileWrite out = new ConcurrentFileWrite("fileName"))
+ * {
+ *  out.add("some line");
+ * }
+ * </code>
+ * </pre>
  * Created by Metifikys on 19.10.2016.
  */
-public class ConcurrentFIleWrite implements Closeable
+public class ConcurrentFileWrite implements Closeable
 {
     private static final Logger LOGGER =
             LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
@@ -26,16 +41,24 @@ public class ConcurrentFIleWrite implements Closeable
     /**
      * @param fileName Output File Name
      */
-    public ConcurrentFIleWrite(String fileName)
-    {
-        this(fileName, 1000);
-    }
+    public ConcurrentFileWrite(String fileName) { this(fileName, 1000); }
+
+    /**
+     * @param file Output File
+     */
+    public ConcurrentFileWrite(File file) { this(file.getAbsolutePath(), 1000); }
+
+    /**
+     * @param file Output File
+     * @param buffSize number of lines in a buffer
+     */
+    public ConcurrentFileWrite(File file,  int buffSize) { this(file.getAbsolutePath(), buffSize); }
 
     /**
      * @param fileName Output File Name
      * @param buffSize number of lines in a buffer
      */
-    public ConcurrentFIleWrite(String fileName, int buffSize)
+    public ConcurrentFileWrite(String fileName, int buffSize)
     {
         this.buffSize = buffSize;
 
@@ -61,25 +84,30 @@ public class ConcurrentFIleWrite implements Closeable
     }
 
     /**
-     * output of the current buffer to the file
+     * output of the current buffer to the file <br>
+     * can be caused by several times due to the fact that verification of the size of different streams
      */
     private void writeAllData()
     {
         synchronized(data)
         {
-            for (String s : data)
-            {
-                try
-                {
-                    out.write(s + "\n");
-                }
-                catch (IOException e)
-                {
-                    LOGGER.error(e);
-                }
-            }
-
+            data.forEach(this::writeLine);
             data.clear();
+        }
+    }
+
+    /**
+     * @param line output line
+     */
+    private void writeLine(String line)
+    {
+        try
+        {
+            out.write(line + "\n");
+        }
+        catch (IOException e)
+        {
+            LOGGER.error(e);
         }
     }
 
