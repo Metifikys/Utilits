@@ -38,8 +38,36 @@ public final class StopwatchTask
         LOGGER.info("task: {}, finish elapsed time: {} (ms)", taskName, System.currentTimeMillis() - startTime);
     }
 
-    // TODO: 19.10.2016 doAction rethrow exception
-    // TODO: 19.10.2016 doAction with generic params
+
+    /**
+     * execute task, log time and error in Task.action
+     * rethrow error in Task.action
+     *
+     * @param taskName task name in log
+     * @param task task to execute
+     * @see metifikys.utils.StopwatchTask.Task
+     */
+    public static void doActionReThrow(String taskName, Task task) throws Exception
+    {
+        requireNonNull(task, "task cannot be null");
+
+        long startTime = System.currentTimeMillis();
+
+        LOGGER.info("start {}", taskName);
+
+        try
+        {
+            task.action();
+        }
+        catch (Exception e)
+        {
+            LOGGER.info("task: {}, finish incorrect, elapsed time: {} (ms)", taskName, System.currentTimeMillis() - startTime);
+            throw e;
+        }
+
+        LOGGER.info("task: {}, finish elapsed time: {} (ms)", taskName, System.currentTimeMillis() - startTime);
+    }
+
 
     @FunctionalInterface
     interface Task

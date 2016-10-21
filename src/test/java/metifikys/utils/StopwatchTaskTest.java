@@ -26,4 +26,17 @@ public class StopwatchTaskTest
     {
         StopwatchTask.doAction("test", () -> {throw new Exception("test error");} );
     }
+
+
+    @Test(expected = NullPointerException.class)
+    public void testDoActionReThrowException() throws Exception
+    {
+        StopwatchTask.doActionReThrow("test", () -> {throw new NullPointerException();} );
+    }
+
+    @Test
+    public void testDoActionReThrow() throws Exception
+    {
+        StopwatchTask.doActionReThrow("test", () -> {} );
+    }
 }
