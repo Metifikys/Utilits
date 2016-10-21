@@ -8,7 +8,7 @@ import static java.util.Objects.requireNonNull;
 
 /**
  * simple class for measuring code execution
- * Created by Metifikys on 19.10.2016.
+ * Created by Metifikys on 2016-10-19
  */
 public final class StopwatchTask
 {
