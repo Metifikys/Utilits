@@ -1,5 +1,6 @@
 package metifikys.utils.io.files;
 
+import javaslang.control.Try;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -7,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Synchronized buffer with output to a file<br>
@@ -101,14 +103,8 @@ public class ConcurrentFileWrite implements Closeable
      */
     private void writeLine(String line)
     {
-        try
-        {
-            out.write(line + "\n");
-        }
-        catch (IOException e)
-        {
-            LOGGER.error(e);
-        }
+        Try.run(() -> out.write(line + "\n"))
+                .onFailure(LOGGER::error);
     }
 
     /**
@@ -117,14 +113,8 @@ public class ConcurrentFileWrite implements Closeable
     @Override
     public void close()
     {
-        try
-        {
-            writeAllData();
-            out.close();
-        }
-        catch (IOException e)
-        {
-            LOGGER.error(e);
-        }
+        writeAllData();
+        Optional.ofNullable(out)
+                .ifPresent(outSt -> Try.run(outSt::close));
     }
 }

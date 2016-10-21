@@ -1,9 +1,8 @@
 package metifikys.utils;
 
+import javaslang.control.Try;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import java.util.Objects;
 
 import static java.util.Objects.requireNonNull;
 
@@ -33,14 +32,8 @@ public final class StopwatchTask
 
         LOGGER.info("start {}", taskName);
 
-        try
-        {
-            task.action();
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(e);
-        }
+        Try.run(task::action)
+                .onFailure(LOGGER::error);
 
         LOGGER.info("task: {}, finish elapsed time: {} (ms)", taskName, System.currentTimeMillis() - startTime);
     }
