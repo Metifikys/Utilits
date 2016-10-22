@@ -1,5 +1,6 @@
 package metifikys.utils;
 
+import javaslang.control.Try;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -14,7 +15,7 @@ public class PropWork
 {
     private static final Logger LOGGER = LogManager.getLogger(PropWork.class.getName());
     private static final String PROP_FILE_NAME = "config.properties";
-    public static final String DEFAULT_CONFIG_PARAM = "ua.pbank.BFRS.Validation.Base";
+    public static final String DEFAULT_CONFIG_PARAM = PropWork.class.getName();
 
     private static Properties prop = init(PROP_FILE_NAME);
 
@@ -23,14 +24,9 @@ public class PropWork
     public static Properties init(String fileName)
     {
         Properties prop = new Properties();
-        try
-        {
-            prop.load(PropWork.class.getClassLoader().getResourceAsStream(fileName));
-        }
-        catch (IOException e)
-        {
-            LOGGER.error(e);
-        }
+
+        Try.run(() ->  prop.load(PropWork.class.getClassLoader().getResourceAsStream(fileName)))
+                .onFailure(LOGGER::error);
 
         return prop;
     }

@@ -1,20 +1,29 @@
 package metifikys.utils.DataBase;
 
 import javaslang.control.Try;
+import metifikys.utils.DataBase.Connections.ConnPreparedStatement;
+import metifikys.utils.DataBase.Connections.ConnPreparedStatement.PreparedStatementProcessor;
+import metifikys.utils.DataBase.Connections.ConnResultSet;
+import metifikys.utils.DataBase.Connections.ConnResultSet.ResultSetProcessor;
+import metifikys.utils.DataBase.Connections.ConnStatement;
+import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
 import metifikys.utils.DataBase.initializer.DbInitializerProperties;
+import metifikys.utils.DataBase.stream.api.SelectGetter;
+import metifikys.utils.DataBase.stream.api.SelectIterator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import metifikys.utils.DataBase.stream.api.SelectGetter;
-import metifikys.utils.DataBase.stream.api.SelectIterator;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Map;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
-import static java.util.Spliterators.*;
+import static java.util.Spliterators.spliteratorUnknownSize;
 
 /**
  * Class for processing requests in a pool of connections
@@ -35,30 +44,17 @@ public final class PolledDb
      * @param name The database server name in the configuration file
      * @param pd The processor that will handle it
      */
-    public static void doDataProcess(String name, ProcessData pd)
+    public static void doDataProcess(String name, StatementProcessor pd)
     {
-        Connection con = null;
         try
         {
-            con = DATA_SOURCE_MAP.get(name).getConnection();
-            if (con == null)
-            {
-                LOGGER.error("cannot find connect to {}", name);
-                return;
-            }
-            Statement st = con.createStatement();
-
-            pd.doProcess(con, st);
-
-            st.close();
+            ConnStatement
+                    .of(DATA_SOURCE_MAP.get(name).getConnection(), pd)
+                    .runProcess();
         }
         catch (SQLException e)
         {
             logSqlExp(e);
-        }
-        finally
-        {
-            closeConn(con);
         }
     }
 
@@ -69,36 +65,20 @@ public final class PolledDb
      * @param sql sql for PreparedStatement
      * @param pd The processor that will handle it
      */
-    public static boolean doDataProcessPrepareSt(String name, String sql, ProcessDataPrSt pd)
+    public static boolean doDataProcessPrepareSt(String name, String sql, PreparedStatementProcessor pd)
     {
-        boolean state = true;
+        boolean state;
 
-        Connection con = null;
         try
         {
-            con = DATA_SOURCE_MAP.get(name).getConnection();
-            if (con == null)
-            {
-                LOGGER.error("cannot find connect to {}", name);
-                return false;
-            }
-
-            PreparedStatement st = con.prepareStatement(sql);
-
-            pd.doProcess(con, st);
-
-            st.executeBatch();
-            st.close();
+            state = ConnPreparedStatement
+                    .of( DATA_SOURCE_MAP.get(name).getConnection(), sql, pd )
+                    .runProcess();
         }
         catch (SQLException e)
         {
             logSqlExp(e);
-
             state = false;
-        }
-        finally
-        {
-            closeConn(con);
         }
 
         return state;
@@ -111,32 +91,17 @@ public final class PolledDb
      * @param sql sql for select data
      * @param pd The processor that will handle it
      */
-    public static void doSelect(String name, String sql, ProcessDataSelect pd)
+    public static void doSelect(String name, String sql, ResultSetProcessor pd)
     {
-        Connection con = null;
         try
         {
-            con = DATA_SOURCE_MAP.get(name).getConnection();
-            if (con == null)
-            {
-                LOGGER.error("cannot find connect to {}", name);
-                return;
-            }
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-
-            pd.doProcess(rs);
-
-            rs.close();
-            st.close();
+            ConnResultSet
+                    .of(DATA_SOURCE_MAP.get(name).getConnection(), sql, pd)
+                    .runProcess();
         }
         catch (SQLException e)
         {
             logSqlExp(e);
-        }
-        finally
-        {
-            closeConn(con);
         }
     }
 
@@ -183,7 +148,7 @@ public final class PolledDb
      *
      * @param e - Exception
      */
-    private static void logSqlExp(SQLException e)
+    public static void logSqlExp(SQLException e)
     {
         LOGGER.error(e);
         SQLException nextException = e.getNextException();

@@ -8,7 +8,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Synchronized buffer with output to a file<br>
@@ -29,7 +31,7 @@ import java.util.Optional;
  * }
  * </code>
  * </pre>
- * Created by Metifikys on 19.10.2016.
+ * Created by Metifikys on 2016-10-19.
  */
 public class ConcurrentFileWrite implements Closeable
 {
@@ -62,6 +64,7 @@ public class ConcurrentFileWrite implements Closeable
      */
     public ConcurrentFileWrite(String fileName, int buffSize)
     {
+        Objects.requireNonNull(fileName, "fileName cannot be null");
         this.buffSize = buffSize;
 
         try
@@ -71,6 +74,7 @@ public class ConcurrentFileWrite implements Closeable
         catch (IOException e)
         {
             LOGGER.error(e);
+            throw new RuntimeException(e);
         }
     }
 
@@ -114,7 +118,7 @@ public class ConcurrentFileWrite implements Closeable
     public void close()
     {
         writeAllData();
-        Optional.ofNullable(out)
+        ofNullable(out)
                 .ifPresent(outSt -> Try.run(outSt::close));
     }
 }
