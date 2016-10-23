@@ -1,5 +1,10 @@
 package metifikys.utils.DataBase;
 
+import metifikys.utils.DataBase.Connections.ConnPreparedStatement;
+import metifikys.utils.DataBase.Connections.ConnPreparedStatement.PreparedStatementProcessor;
+import metifikys.utils.DataBase.Connections.ConnStatement;
+import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -21,7 +26,7 @@ public final class AsyncPolledDb
      * @param name The database server name in the configuration file
      * @param pd The processor that will handle it
      */
-    public static void doDataProcess(String name, ProcessData pd)
+    public static void doDataProcess(String name, StatementProcessor pd)
     {
         executorService.execute(() -> PolledDb.doDataProcess(name, pd));
     }
@@ -33,7 +38,7 @@ public final class AsyncPolledDb
      * @param sql sql for PreparedStatement
      * @param pd The processor that will handle it
      */
-    public static void doDataProcessPrepareSt(String name, String sql, ProcessDataPrSt pd)
+    public static void doDataProcessPrepareSt(String name, String sql, PreparedStatementProcessor pd)
     {
         executorService.execute(() -> PolledDb.doDataProcessPrepareSt(name, sql, pd));
     }

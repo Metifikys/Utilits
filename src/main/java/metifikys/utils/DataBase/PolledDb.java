@@ -10,6 +10,7 @@ import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
 import metifikys.utils.DataBase.initializer.DbInitializerProperties;
 import metifikys.utils.DataBase.stream.api.SelectGetter;
 import metifikys.utils.DataBase.stream.api.SelectIterator;
+import metifikys.utils.DataBase.stream.api.StreamFomSelect;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
@@ -49,7 +50,7 @@ public final class PolledDb
         try
         {
             ConnStatement
-                    .of(DATA_SOURCE_MAP.get(name).getConnection(), pd)
+                    .of(getConnection(name), pd)
                     .runProcess();
         }
         catch (SQLException e)
@@ -72,7 +73,7 @@ public final class PolledDb
         try
         {
             state = ConnPreparedStatement
-                    .of( DATA_SOURCE_MAP.get(name).getConnection(), sql, pd )
+                    .of( getConnection(name), sql, pd )
                     .runProcess();
         }
         catch (SQLException e)
@@ -96,7 +97,7 @@ public final class PolledDb
         try
         {
             ConnResultSet
-                    .of(DATA_SOURCE_MAP.get(name).getConnection(), sql, pd)
+                    .of(getConnection(name), sql, pd)
                     .runProcess();
         }
         catch (SQLException e)
@@ -121,17 +122,15 @@ public final class PolledDb
         Connection con = null;
         try
         {
-            con = DATA_SOURCE_MAP.get(name).getConnection();
+            con = getConnection(name);
             if (con == null)
             {
                 LOGGER.error("cannot find connect to {}", name);
                 return Stream.empty();
             }
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
 
-            stream = StreamSupport
-                    .stream(spliteratorUnknownSize(new SelectIterator(rs, con, st), 0), false);
+            stream = StreamFomSelect.of(con)
+                    .select(sql);
         }
         catch (SQLException e)
         {
@@ -141,6 +140,12 @@ public final class PolledDb
         }
 
         return stream;
+    }
+
+
+    public static Connection getConnection(String name) throws SQLException
+    {
+        return DATA_SOURCE_MAP.get(name).getConnection();
     }
 
     /**
