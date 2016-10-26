@@ -1,4 +1,4 @@
-package metifikys.utils.DataBase.stream.api.orm;
+package metifikys.utils.DataBase.orm;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

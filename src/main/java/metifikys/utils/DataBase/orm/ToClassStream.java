@@ -1,4 +1,4 @@
-package metifikys.utils.DataBase.stream.api.orm;
+package metifikys.utils.DataBase.orm;
 
 /**
  * Created by Metifikys on 2016-10-24.
