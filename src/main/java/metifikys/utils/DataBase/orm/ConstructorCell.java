@@ -1,11 +1,13 @@
 package metifikys.utils.DataBase.orm;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +19,9 @@ import static java.util.Optional.ofNullable;
  */
 public class ConstructorCell<T>
 {
+    private static final Logger LOGGER =
+                LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
+
     private Class<T> aClass;
     private Constructor<T> ctor;
     private Map<Cell, Field> fieldsMap = new HashMap<>();
@@ -89,7 +94,7 @@ public class ConstructorCell<T>
         }
         catch (InstantiationException | IllegalAccessException | SQLException | InvocationTargetException e)
         {
-            e.printStackTrace();
+            LOGGER.error(e);
         }
 
         return c;

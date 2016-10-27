@@ -16,16 +16,11 @@ import org.apache.logging.log4j.Logger;
 import org.apache.tomcat.jdbc.pool.DataSource;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Map;
-import java.util.Spliterators;
 import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 import static java.util.Optional.ofNullable;
-import static java.util.Spliterators.spliteratorUnknownSize;
 
 /**
  * Class for processing requests in a pool of connections
@@ -165,11 +160,8 @@ public final class PolledDb
                 return Stream.empty();
             }
 
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
-
-            stream = StreamSupport
-                    .stream(Spliterators.<T>spliteratorUnknownSize(new <T>ToClassStream(rs, con, st, aClass), 0), false);
+            stream =ToClassStream.of(con, aClass)
+                    .select(sql);
         }
         catch (SQLException e)
         {

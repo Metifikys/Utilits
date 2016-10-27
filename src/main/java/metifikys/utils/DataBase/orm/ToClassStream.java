@@ -1,7 +1,6 @@
 package metifikys.utils.DataBase.orm;
 
 import javaslang.control.Try;
-import metifikys.utils.DataBase.PolledDb;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -11,70 +10,51 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
+import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-import static java.util.Optional.ofNullable;
+import static java.util.Spliterators.spliteratorUnknownSize;
 
 /**
- * Created by Metifikys on 2016-10-24.
+ * Created by Metifikys on 2016-10-27.
  */
-public class ToClassStream<T> implements Iterator<T>, Closeable
+public class ToClassStream<T> implements Closeable
 {
     private static final Logger LOGGER =
-            LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
+                LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
 
-    private ResultSet rs;
     private Connection con;
-    private Statement st;
+    private Class<T> aClass;
 
-    ConstructorCell<T> constructorCell;
-
-    public ToClassStream(ResultSet rs, Connection con, Statement st, Class<T> aClass)
+    private ToClassStream(Connection con, Class<T> aClass)
     {
-        this.rs = rs;
+        Objects.requireNonNull(con, "connection cannot be null");
+        Objects.requireNonNull(aClass, "class cannot be null");
         this.con = con;
-        this.st = st;
-
-        constructorCell = ConstructorCell.of(aClass);
+        this.aClass = aClass;
     }
 
-    @Override
-    public boolean hasNext()
+    public static <T> ToClassStream<T> of(Connection con, Class<T> aClass) {return new ToClassStream<T>(con, aClass);}
+
+
+    public Stream<T> select(String sql) throws SQLException
     {
-        boolean out = false;
 
-        try
-        {
-            if (!rs.next())
-                Try.run(this::close);
-            else
-                out = true;
-        }
-        catch (SQLException e)
-        {
-            LOGGER.error(e);
-            Try.run(this::close);
-        }
+        Objects.requireNonNull(sql, "sql cannot be null");
 
-        return out;
+        Statement st = con.createStatement();
+        ResultSet rs = st.executeQuery(sql);
+
+        return StreamSupport
+                .stream(spliteratorUnknownSize(new ResultSetToCell<T>(rs, con, st, aClass), 0), false);
     }
 
-    @Override
-    public T next()
-    {
-        return constructorCell.createOrNull(rs);
-    }
 
     @Override
     public void close() throws IOException
     {
-        ofNullable(rs)
-                .ifPresent(rst -> Try.run(rst::close));
-
-        ofNullable(st)
-                .ifPresent(stm -> Try.run(stm::close));
-
-        PolledDb.closeConn(con);
-        LOGGER.debug("is close");
+        Try.run(con::close)
+                .onFailure(LOGGER::error);
     }
 }
