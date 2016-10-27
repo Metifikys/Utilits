@@ -8,8 +8,8 @@ import metifikys.utils.DataBase.Connections.ConnResultSet.ResultSetProcessor;
 import metifikys.utils.DataBase.Connections.ConnStatement;
 import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
 import metifikys.utils.DataBase.initializer.DbInitializerProperties;
+import metifikys.utils.DataBase.orm.ToClassStream;
 import metifikys.utils.DataBase.stream.api.SelectGetter;
-import metifikys.utils.DataBase.stream.api.SelectIterator;
 import metifikys.utils.DataBase.stream.api.StreamFomSelect;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,6 +20,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
+import java.util.Spliterators;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -131,6 +132,44 @@ public final class PolledDb
 
             stream = StreamFomSelect.of(con)
                     .select(sql);
+        }
+        catch (SQLException e)
+        {
+            logSqlExp(e);
+            closeConn(con);
+            stream = Stream.empty();
+        }
+
+        return stream;
+    }
+
+    /**
+     * @param name The database server name in the configuration file
+     * @param sql sql for select data
+     *
+     * @return Stream of SelectGetter
+     *
+     * @see metifikys.utils.DataBase.stream.api.SelectGetter
+     */
+    public static <T> Stream<T> doSelect(String name, String sql, Class<T> aClass)
+    {
+        Stream<T> stream;
+
+        Connection con = null;
+        try
+        {
+            con = getConnection(name);
+            if (con == null)
+            {
+                LOGGER.error("cannot find connect to {}", name);
+                return Stream.empty();
+            }
+
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery(sql);
+
+            stream = StreamSupport
+                    .stream(Spliterators.<T>spliteratorUnknownSize(new <T>ToClassStream(rs, con, st, aClass), 0), false);
         }
         catch (SQLException e)
         {

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 public @interface Cell
 {
     String name();
-    Type type();
+    Type type() default Type.OBJECT;
 
     enum Type
     {

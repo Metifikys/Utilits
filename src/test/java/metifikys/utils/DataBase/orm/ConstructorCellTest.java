@@ -4,6 +4,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.sql.ResultSet;
+import java.util.Arrays;
 
 /**
  * Created by Metifikys on 2016-10-24.

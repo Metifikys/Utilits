@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -64,6 +65,31 @@ public class ConstructorCell<T>
             Cell cell = nameHolder.getKey();
 
             field.set(c, rSet.getObject(cell.name()));
+        }
+
+        return c;
+    }
+
+    public T createOrNull(ResultSet rSet)
+    {
+        requireNonNull(rSet);
+
+        T c = null;
+        try
+        {
+            c = ctor.newInstance();
+
+            for (Map.Entry<Cell, Field> nameHolder : fieldsMap.entrySet())
+            {
+                Field field = nameHolder.getValue();
+                Cell cell = nameHolder.getKey();
+
+                field.set(c, rSet.getObject(cell.name()));
+            }
+        }
+        catch (InstantiationException | IllegalAccessException | SQLException | InvocationTargetException e)
+        {
+            e.printStackTrace();
         }
 
         return c;
