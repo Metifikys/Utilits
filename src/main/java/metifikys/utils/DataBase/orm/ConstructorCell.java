@@ -14,25 +14,25 @@ import static java.util.Optional.ofNullable;
 /**
  * Created by Metifikys on 2016-10-24.
  */
-public class ConstructorCell
+public class ConstructorCell<T>
 {
-    private Class<?> aClass;
-    private Constructor ctor;
+    private Class<T> aClass;
+    private Constructor<T> ctor;
     private Map<Cell, Field> fieldsMap = new HashMap<>();
 
-    private ConstructorCell(Class<?> aClass)
+    private ConstructorCell(Class<T> aClass)
     {
         this.aClass = aClass;
         init();
     }
 
-    public static ConstructorCell of(Class<?> aClass) {return new ConstructorCell(aClass);}
+    public static <T>ConstructorCell <T>of(Class<T> aClass) {return new ConstructorCell<>(aClass);}
 
     private void init()
     {
         for (Constructor<?> constructor : aClass.getDeclaredConstructors())
         {
-            ctor = constructor;
+            ctor = (Constructor<T>)constructor;
             if (constructor.getGenericParameterTypes().length == 0)
                 break;
         }
@@ -49,29 +49,14 @@ public class ConstructorCell
                         field.setAccessible(true);
                         fieldsMap.put(cell, field);
                     });
-
-             /*switch (cell.type())
-                {
-                    case STRING:  field.set(c, "some string");
-                        break;
-                    case INTEGER: field.set(c, 1);
-                        break;
-                    case LONG:    field.set(c, 10);
-                        break;
-                    case DOUBLE:  field.set(c, 0.5);
-                        break;
-                    case OBJECT:  field.set(c, new Object());
-                        break;
-                }*/
-
         }
     }
 
-    public <T> T create(ResultSet rSet) throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException
+    public T create(ResultSet rSet) throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException
     {
         requireNonNull(rSet);
 
-        T c = (T)ctor.newInstance();
+        T c = ctor.newInstance();
 
         for (Map.Entry<Cell, Field> nameHolder : fieldsMap.entrySet())
         {

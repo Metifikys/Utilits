@@ -13,8 +13,8 @@ public class ConstructorCellTest
     @Test
     public void testCreate() throws Exception
     {
-        ConstructorCell constructorCell = ConstructorCell
-                .of(ForTest.class);
+        ConstructorCell<ForTest> constructorCell =
+                ConstructorCell.of(ForTest.class);
 
         ResultSet resultSet = Mockito.mock(ResultSet.class);
         Mockito.when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(true).thenReturn(false);
@@ -24,7 +24,7 @@ public class ConstructorCellTest
 
         while (resultSet.next())
             constructorCell
-                    .<ForTest>create(resultSet)
+                    .create(resultSet)
                     .method();
     }
 
