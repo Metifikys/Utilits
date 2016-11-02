@@ -31,10 +31,10 @@ public class ConstructorCellTest
 
     static class ForTest
     {
-        @Cell(name = "id", type = Cell.Type.INTEGER)
+        @Cell(value = "id", type = Cell.Type.INTEGER)
         Integer id;
 
-        @Cell(name = "name", type = Cell.Type.STRING)
+        @Cell(value = "name", type = Cell.Type.STRING)
         String name;
 
 

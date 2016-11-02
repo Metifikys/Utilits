@@ -7,7 +7,8 @@ import metifikys.utils.DataBase.Connections.ConnResultSet;
 import metifikys.utils.DataBase.Connections.ConnResultSet.ResultSetProcessor;
 import metifikys.utils.DataBase.Connections.ConnStatement;
 import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
-import metifikys.utils.DataBase.initializer.DbInitializerProperties;
+import metifikys.utils.DataBase.initializer.DbInitializerPropertiesFile;
+import metifikys.utils.DataBase.initializer.InitAll;
 import metifikys.utils.DataBase.orm.ToClassStream;
 import metifikys.utils.DataBase.stream.api.SelectGetter;
 import metifikys.utils.DataBase.stream.api.StreamFomSelect;
@@ -17,6 +18,7 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -31,7 +33,7 @@ public final class PolledDb
     private static final Logger LOGGER =
                 LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
 
-    private static final Map<String, DataSource> DATA_SOURCE_MAP = DbInitializerProperties.init();
+    private static final Map<String, DataSource> DATA_SOURCE_MAP = InitAll.init();
 
     private PolledDb() {}
 

@@ -51,13 +51,13 @@ public class ToClassStreamTest
 
     static private class DataCell
     {
-        @Cell(name = "num")
+        @Cell("num")
         Integer num;
 
-        @Cell(name = "dbVal")
+        @Cell("dbVal")
         Double dbVal;
 
-        @Cell(name = "text")
+        @Cell("text")
         String text;
 
         public String formString()

@@ -8,11 +8,11 @@ import java.lang.annotation.Target;
 /**
  * Created by Metifikys on 2016-10-24.
  */
-@Target(value= ElementType.FIELD)
+@Target(ElementType.FIELD)
 @Retention(value= RetentionPolicy.RUNTIME)
 public @interface Cell
 {
-    String name();
+    String value();
     Type type() default Type.OBJECT;
 
     enum Type

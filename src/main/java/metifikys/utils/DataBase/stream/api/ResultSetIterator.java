@@ -66,6 +66,5 @@ public abstract class ResultSetIterator<T> implements Iterator<T>, Closeable
                 .ifPresent(stm -> Try.run(stm::close));
 
         PolledDb.closeConn(con);
-        LOGGER.debug("is close");
     }
 }

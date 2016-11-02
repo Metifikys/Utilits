@@ -17,6 +17,7 @@ import java.util.stream.StreamSupport;
 import static java.util.Spliterators.spliteratorUnknownSize;
 
 /**
+ * returns a stream based on the iterator ResultSetToCell
  * Created by Metifikys on 2016-10-27.
  */
 public class ToClassStream<T> implements Closeable
@@ -35,9 +36,26 @@ public class ToClassStream<T> implements Closeable
         this.aClass = aClass;
     }
 
-    public static <T> ToClassStream<T> of(Connection con, Class<T> aClass) {return new ToClassStream<T>(con, aClass);}
+    /**
+     * @param con connection to DB
+     * @param aClass class of return type stream
+     * @param <T> stream object type
+     *
+     * @return new instance of ToClassStream
+     */
+    public static <T> ToClassStream<T> of(Connection con, Class<T> aClass)
+    {
+        return new ToClassStream<T>(con, aClass);
+    }
 
 
+    /**
+     * @param sql request to select rows
+     *
+     * @return stream of T
+     *
+     * @throws SQLException
+     */
     public Stream<T> select(String sql) throws SQLException
     {
 

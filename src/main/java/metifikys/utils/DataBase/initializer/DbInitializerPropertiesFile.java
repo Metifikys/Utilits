@@ -17,14 +17,14 @@ import java.util.Properties;
  * Loader data to connect to the database from the Properties File (BD_FILE_PATH in config.properties)
  * Created by Metifikys on 2016-09-12.
  */
-final public class DbInitializerProperties
+final public class DbInitializerPropertiesFile
 {
     private static final Logger LOGGER =
                 LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
 
     public static final String BD_FILE_PATH = "BD_FILE_PATH";
 
-    private DbInitializerProperties() {}
+    private DbInitializerPropertiesFile() {}
 
     /**
      * Loading parameters from the configuration file <br>

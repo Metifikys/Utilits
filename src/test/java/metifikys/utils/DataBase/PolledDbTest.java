@@ -65,4 +65,24 @@ public class PolledDbTest
         );
     }
 
+    @Test
+    public void testDoSelect1() throws Exception
+    {
+        PolledDb.doSelect("test", "select * from test.test", DoSelectClass.class)
+                .forEach( DoSelectClass::print );
+    }
+
+    private static class DoSelectClass
+    {
+        @Cell("name")
+        String name;
+
+        @Cell("id")
+        Integer id;
+
+        public void print()
+        {
+            System.out.println(name + "\t" + id);
+        }
+    }
 }

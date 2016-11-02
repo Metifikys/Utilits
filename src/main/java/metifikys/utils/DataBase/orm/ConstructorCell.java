@@ -15,6 +15,7 @@ import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 
 /**
+ * construct object-based annotations in the class
  * Created by Metifikys on 2016-10-24.
  */
 public class ConstructorCell<T>
@@ -34,6 +35,12 @@ public class ConstructorCell<T>
 
     public static <T>ConstructorCell <T>of(Class<T> aClass) {return new ConstructorCell<>(aClass);}
 
+    /**
+     * find constructor without params <br>
+     * find all fields with annotation Cell <br>
+     *
+     * @see metifikys.utils.DataBase.orm.Cell
+     */
     private void init()
     {
         for (Constructor<?> constructor : aClass.getDeclaredConstructors())
@@ -58,6 +65,16 @@ public class ConstructorCell<T>
         }
     }
 
+    /**
+     * @param rSet ResultSet
+     *
+     * @return instance of T
+     *
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     * @throws InstantiationException
+     * @throws SQLException
+     */
     public T create(ResultSet rSet) throws IllegalAccessException, InvocationTargetException, InstantiationException, SQLException
     {
         requireNonNull(rSet);
@@ -69,34 +86,32 @@ public class ConstructorCell<T>
             Field field = nameHolder.getValue();
             Cell cell = nameHolder.getKey();
 
-            field.set(c, rSet.getObject(cell.name()));
+            field.set(c, rSet.getObject(cell.value()));
         }
 
         return c;
     }
 
+    /**
+     * log all error from create
+     *
+     * @param rSet ResultSet
+     *
+     * @return instance of T
+     */
     public T createOrNull(ResultSet rSet)
     {
-        requireNonNull(rSet);
+        T out = null;
 
-        T c = null;
         try
         {
-            c = ctor.newInstance();
-
-            for (Map.Entry<Cell, Field> nameHolder : fieldsMap.entrySet())
-            {
-                Field field = nameHolder.getValue();
-                Cell cell = nameHolder.getKey();
-
-                field.set(c, rSet.getObject(cell.name()));
-            }
+            out = create(rSet);
         }
         catch (InstantiationException | IllegalAccessException | SQLException | InvocationTargetException e)
         {
             LOGGER.error(e);
         }
 
-        return c;
+        return out;
     }
 }
