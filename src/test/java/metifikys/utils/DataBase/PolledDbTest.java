@@ -2,12 +2,6 @@ package metifikys.utils.DataBase;
 
 import metifikys.utils.DataBase.orm.Cell;
 import org.junit.Test;
-import org.postgresql.Driver;
-
-import java.math.BigDecimal;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
 
 import static org.junit.Assert.*;
 

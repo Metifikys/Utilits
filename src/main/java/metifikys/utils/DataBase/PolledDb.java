@@ -7,7 +7,6 @@ import metifikys.utils.DataBase.Connections.ConnResultSet;
 import metifikys.utils.DataBase.Connections.ConnResultSet.ResultSetProcessor;
 import metifikys.utils.DataBase.Connections.ConnStatement;
 import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
-import metifikys.utils.DataBase.initializer.DbInitializerPropertiesFile;
 import metifikys.utils.DataBase.initializer.InitAll;
 import metifikys.utils.DataBase.orm.ToClassStream;
 import metifikys.utils.DataBase.stream.api.SelectGetter;
@@ -18,7 +17,6 @@ import org.apache.tomcat.jdbc.pool.DataSource;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Stream;
 

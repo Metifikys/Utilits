@@ -13,11 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import static metifikys.utils.DataBase.initializer.InitAll.getDataSourceFromPoolProperties;
+
 /**
  * Loader data to connect to the database from the Properties File (BD_FILE_PATH in config.properties)
  * Created by Metifikys on 2016-09-12.
  */
-final public class DbInitializerPropertiesFile
+public final class DbInitializerPropertiesFile
 {
     private static final Logger LOGGER =
                 LogManager.getLogger(new Object(){}.getClass().getEnclosingClass().getName());
@@ -67,24 +69,7 @@ final public class DbInitializerPropertiesFile
             pool.setPassword(prop.getProperty(dbse + ".pass"));
             pool.setDriverClassName(prop.getProperty(dbse + ".driver"));
 
-            pool.setTestOnBorrow(true);
-            pool.setValidationQuery("SELECT 1");
-            pool.setTimeBetweenEvictionRunsMillis(30000);
-            pool.setMaxWait(10000);
-            pool.setRemoveAbandonedTimeout(10);
-            pool.setMinEvictableIdleTimeMillis(30000);
-            pool.setMinIdle(30);
-            pool.setInitialSize(5);
-            pool.setLogAbandoned(true);
-            pool.setRemoveAbandoned(true);
-            pool.setJdbcInterceptors(
-                    "org.apache.tomcat.jdbc.pool.interceptor.ConnectionState;" +
-                            "org.apache.tomcat.jdbc.pool.interceptor.StatementFinalizer");
-
-            DataSource datasource = new DataSource();
-            datasource.setPoolProperties(pool);
-
-            out.put(dbse, datasource);
+            out.put(dbse, getDataSourceFromPoolProperties(pool));
         }
 
         return out;

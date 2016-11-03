@@ -1,8 +1,6 @@
 package metifikys.utils.DataBase;
 
-import metifikys.utils.DataBase.Connections.ConnPreparedStatement;
 import metifikys.utils.DataBase.Connections.ConnPreparedStatement.PreparedStatementProcessor;
-import metifikys.utils.DataBase.Connections.ConnStatement;
 import metifikys.utils.DataBase.Connections.ConnStatement.StatementProcessor;
 
 import java.util.concurrent.ExecutorService;
