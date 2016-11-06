@@ -95,16 +95,16 @@ public class DbInitializerXmlConfigs
         @XmlElement(name = "driver")
         private String driver;
 
-        public String getName() { return name; }
+        public String getName() { return name.trim(); }
 
         private DataSource createDataSource()
         {
             PoolProperties pool = new PoolProperties();
 
-            pool.setUrl(url);
-            pool.setUsername(userName);
-            pool.setPassword(password);
-            pool.setDriverClassName(driver);
+            pool.setUrl(url.trim());
+            pool.setUsername(userName.trim());
+            pool.setPassword(password.trim());
+            pool.setDriverClassName(driver.trim());
 
             return getDataSourceFromPoolProperties(pool);
         }

@@ -14,7 +14,7 @@ public class PolledDbTest
     @Test
     public void testDoSelect() throws Exception
     {
-        PolledDb.doSelect("test", "select * from test.test" )
+        PolledDb.doSelect("testXml", "select * from test.test" )
                 .forEach( System.out::println );
     }
 
@@ -74,9 +74,6 @@ public class PolledDbTest
         @Cell("id")
         Integer id;
 
-        public void print()
-        {
-            System.out.println(name + "\t" + id);
-        }
+        public void print() { System.out.println(name + "\t" + id); }
     }
 }
