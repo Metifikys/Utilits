@@ -9,11 +9,13 @@ import metifikys.utils.PropWork;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import static metifikys.utils.DataBase.initializer.InitAll.getDataSourceFromPoolProperties;
+import static metifikys.utils.PropWork.getPropValue;
 
 /**
  * Loader data to connect to the database from the Properties File (BD_FILE_PATH in config.properties)
@@ -42,9 +44,10 @@ public final class DbInitializerPropertiesFile
     public static Map<String, DataSource> init()
     {
         Properties prop = new Properties();
-        try (InputStream is = new FileInputStream(PropWork.getPropValue(BD_FILE_PATH));)
+
+        try(InputStream inputStream = new URL(getPropValue(BD_FILE_PATH)).openStream())
         {
-            prop.load(is);
+            prop.load(inputStream);
         }
         catch (IOException e)
         {

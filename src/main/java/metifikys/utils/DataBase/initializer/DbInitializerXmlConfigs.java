@@ -13,7 +13,8 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -49,7 +50,7 @@ public class DbInitializerXmlConfigs
                     JAXBContext.newInstance(DataSourcesParams.class).createUnmarshaller();
 
             DataSourcesParams dataSourceParams = (DataSourcesParams)
-                    jaxbUnmarshaller.unmarshal(new File(propValue));
+                    jaxbUnmarshaller.unmarshal(new URL(propValue));
 
             outMap = dataSourceParams.getListData()
                     .stream()
@@ -57,7 +58,7 @@ public class DbInitializerXmlConfigs
                             Collectors.toMap(DataSourceParams::getName, DataSourceParams::createDataSource)
                     );
         }
-        catch (JAXBException e)
+        catch (JAXBException | MalformedURLException e)
         {
             LOGGER.error(e);
         }

@@ -3,6 +3,9 @@ package metifikys.utils.DataBase;
 import metifikys.utils.DataBase.orm.Cell;
 import org.junit.Test;
 
+import java.io.File;
+import java.net.URL;
+
 import static org.junit.Assert.*;
 
 /**
@@ -14,7 +17,7 @@ public class PolledDbTest
     @Test
     public void testDoSelect() throws Exception
     {
-        PolledDb.doSelect("testXml", "select * from test.test" )
+        PolledDb.doSelect("test", "select * from test.test" )
                 .forEach( System.out::println );
     }
 
